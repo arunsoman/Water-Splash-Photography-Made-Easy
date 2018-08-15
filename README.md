@@ -1,1 +1,2 @@
-"# canon-80d-esp8266" 
+esp8266 based infra for water splash photography
+check out the idea in the picture folder
