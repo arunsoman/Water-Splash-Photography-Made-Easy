@@ -8,24 +8,26 @@ Physics* PhysicsResource::getModel(){
   return &physics;
 }
 
-void PhysicsResource::registerResource(ESP8266WebServer *server){
-  server->on("/physics", HTTP_GET, getApproxTimeToImpact);
-  server->on("/physics", HTTP_POST, getTimeToImpact);
-  server->on("/physics", HTTP_GET, getTimeToImpact);
+void PhysicsResource::registerResource( ESP8266WebServer *server){
+  server->on("/physics", HTTP_GET, [this,&server](){
+    this->getApproxTimeToImpact(server);
+  });
+  // server->on("/physics", HTTP_POST, getTimeToImpact);
+  // server->on("/physics", HTTP_GET, getTimeToImpact);
 }
 
-JsonObject& PhysicsResource::handler(){
+JsonObject& PhysicsResource::handler( ESP8266WebServer *server){
   StaticJsonBuffer<500> jsonBuffer;
-  String post_body = http_rest_server->arg("plain");
+  String post_body = server->arg("plain");
   Serial.println(post_body);
   JsonObject& jsonBody = jsonBuffer.parseObject(post_body);
   Serial.print("HTTP Method: ");
-  Serial.println(http_rest_server->method());
+  Serial.println(server->method());
   return jsonBody;
 }
 
-void PhysicsResource::getApproxTimeToImpact(){
-  JsonObject& jsonBody = handler();
+void PhysicsResource::getApproxTimeToImpact( ESP8266WebServer *http_rest_server){
+  JsonObject& jsonBody = handler(http_rest_server);
   if (!jsonBody.success()) {
     Serial.println("error in parsing json body");
     http_rest_server->send(400);
