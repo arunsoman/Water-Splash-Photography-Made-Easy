@@ -1,28 +1,23 @@
 #include "Dropper.h"
 #include <Arduino.h>
-
+using namespace std;
 
 /*********************************************************************
 * Comment
 *********************************************************************/
-Dropper::Dropper(int d, int i, int x)
+Dropper::Dropper()
 {
-    SolenoidValvePin = 3;
-    secondDrop = d;
-    interval = i;
-    shutterSpeed= x;
-    wait = secondDrop;
+  SolenoidValvePin = 3;
 }
 
-void Dropper::reset(int d, int i, int x){
-  secondDrop = d;
-  interval = i;
-  shutterSpeed= x;
-  wait = secondDrop;
+void Dropper::reset(vector<long> x, long y, long z){
+  schedule = x;
+  repeatCycle = y;
+  shutterSpeed = z;
+  index = 0;
 }
 void Dropper::drip(){
-  delay(wait);
-  wait = (wait == secondDrop)? interval:secondDrop;
+  delay(schedule[index++]);
   drop();
 }
 

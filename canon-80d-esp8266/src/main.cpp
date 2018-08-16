@@ -4,15 +4,18 @@
 #include "physics\Physics.h"
 #include "restserver\resources\PhysicsResource.h"
 #include "restserver\RestServer.h"
+#include "restServer\resources\Infra.h"
 
- Connector e3Connector;
- Dropper* dropper = new Dropper(2,50000, 200);
- PhysicsResource physicsRes;
- RestServer restServer;
+Infra infra;
+PhysicsResource physicsRes;
+RestServer restServer;
+Dropper* dropper = infra.getDropper();
+Connector* connector = infra.getConnector();
 
 void setup() {
   physicsRes.registerResource(restServer.getServer());
-    // put your setup code here, to run once:
+  infra.registerResource(restServer.getServer());
+  // put your setup code here, to run once:
 }
 
 void loop() {
@@ -20,5 +23,5 @@ void loop() {
   int timeToImpact = physicsRes.getModel()->getTimeToImpact();
   dropper->drip();
   delay(timeToImpact);
-  e3Connector.shoot();
+  connector->shoot();
 }
