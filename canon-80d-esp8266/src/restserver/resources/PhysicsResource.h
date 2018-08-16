@@ -10,14 +10,14 @@ class PhysicsResource{
 
 private:
   Physics physics;
-  ESP8266WebServer http_rest_server;
-  char* getApproxTimeToImpact(JsonObject &jsonObj);
-  char* getTimeToImpact(JsonObject &jsonObj);
-  char* postTimetoImpact(JsonObject &jsonObj);
+  ESP8266WebServer *http_rest_server;
+  void getApproxTimeToImpact();
+  void getTimeToImpact();
+  void postTimetoImpact();
 public:
-  PhysicsResource (Physics &p);
-  void registerResource(ESP8266WebServer &server);
-  void handler(void(*funcPtr)(JsonObject&));
+  Physics* getModel();
+  void registerResource(ESP8266WebServer*);
+  JsonObject&  handler();
 };
 
 #endif

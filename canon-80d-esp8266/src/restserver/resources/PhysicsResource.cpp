@@ -4,46 +4,46 @@
 #include <ESP8266WebServer.h>
 #include <ArduinoJson.h>
 
-PhysicsResource::PhysicsResource(Physics& p){
-  physics = p;
-};
-
-void PhysicsResource::registerResource(ESP8266WebServer& server){
-  http_rest_server = server;
-  http_rest_server.on("/physics", HTTP_GET, handler(getApproxTimeToImpact));
-  http_rest_server.on("/physics", HTTP_POST, handler(getTimeToImpact));
-  http_rest_server.on("/physics", HTTP_GET, handler(getTimeToImpact));
+Physics* PhysicsResource::getModel(){
+  return &physics;
 }
 
-void PhysicsResource::handler(void(*funcPtr)(&JsonObject)){
+void PhysicsResource::registerResource(ESP8266WebServer *server){
+  server->on("/physics", HTTP_GET, getApproxTimeToImpact);
+  server->on("/physics", HTTP_POST, getTimeToImpact);
+  server->on("/physics", HTTP_GET, getTimeToImpact);
+}
+
+JsonObject& PhysicsResource::handler(){
   StaticJsonBuffer<500> jsonBuffer;
-  String post_body = http_rest_server.arg("plain");
+  String post_body = http_rest_server->arg("plain");
   Serial.println(post_body);
   JsonObject& jsonBody = jsonBuffer.parseObject(post_body);
   Serial.print("HTTP Method: ");
-  Serial.println(http_rest_server.method());
+  Serial.println(http_rest_server->method());
+  return jsonBody;
+}
 
+void PhysicsResource::getApproxTimeToImpact(){
+  JsonObject& jsonBody = handler();
   if (!jsonBody.success()) {
-    Serial.println("error in parsin json body");
-    http_rest_server.send(400);
+    Serial.println("error in parsing json body");
+    http_rest_server->send(400);
   }
   else {
-    http_rest_server.send(200, "application/json", funcPtr(&jsonBody); );
+    StaticJsonBuffer<200> jsonBuffer1;
+    JsonObject& jsonObj1 = jsonBuffer1.createObject();
+    char JSONmessageBuffer[200];
+    jsonObj1["Approx Time To Impact"] = physics.getApproxTimeToImpact(jsonBody["height"], jsonBody["mass"]);
+    jsonObj1.prettyPrintTo(JSONmessageBuffer, sizeof(JSONmessageBuffer));
+
+    http_rest_server->send(200, "application/json", JSONmessageBuffer );
   }
 }
 
-char* PhysicsResource::getApproxTimeToImpact(JsonObject& jsonBody){
-  StaticJsonBuffer<200> jsonBuffer;
-  JsonObject& jsonObj = jsonBuffer.createObject();
-  char JSONmessageBuffer[200];
-  jsonObj["Approx Time To Impact"] = physics.getApproxTimeToImpact(jsonBody["height"], jsonBody["mass"]);
-  jsonObj.prettyPrintTo(JSONmessageBuffer, sizeof(JSONmessageBuffer));
-  return JSONmessageBuffer;
-}
-
-char* PhysicsResource::getTimeToImpact(JsonObject& jsonBody){
+void PhysicsResource::getTimeToImpact(){
 
 }
-char* PhysicsResource::postTimetoImpact(JsonObject& jsonBody){
+void PhysicsResource::postTimetoImpact(){
 
 };

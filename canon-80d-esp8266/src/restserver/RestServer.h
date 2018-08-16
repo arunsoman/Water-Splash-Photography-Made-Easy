@@ -33,16 +33,16 @@ private:
     return WiFi.status(); // return the WiFi connection status
   }
 
+  void greet(){
+    http_rest_server->send(200, "text/html","Welcome to the ESP8266 REST Web Server");
+  }
   void config_rest_server_routing() {
-    http_rest_server->on("/", HTTP_GET, []() {
-      http_rest_server->send(200, "text/html","Welcome to the ESP8266 REST Web Server");
-    });
+    *http_rest_server->on("/", HTTP_GET, greet);
   }
 
 public:
 
-  RestServer(PhysicsResource &physicsRes) {
-    physicsResourcePtr = physicsRes;
+  RestServer() {
     Serial.begin(115200);
 
     if (init_wifi() == WL_CONNECTED) {
@@ -62,6 +62,10 @@ public:
 
   void handleClient(){
     http_rest_server->handleClient();
+  }
+
+  const ESP8266WebServer* getServer(){
+    return http_rest_server;
   }
 
 };
