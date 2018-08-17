@@ -11,13 +11,22 @@ Dropper::Dropper()
 }
 
 void Dropper::reset(vector<long> x, long y, long z){
+  for (vector<long>::iterator it = schedule.begin(); it != schedule.end(); ++it) {
+    delete &it;
+  }
+  delete &schedule;
   schedule = x;
-  repeatCycle = y;
+  schedule.push_back(new long (y));
+  it = schedule.begin();
   shutterSpeed = z;
-  index = 0;
 }
 void Dropper::drip(){
-  delay(schedule[index++]);
+  if(it == schedule.end()){
+    // memory leak ?? it;
+    it = schedule.begin();
+  }
+  delay(*it);
+  it++;
   drop();
 }
 
