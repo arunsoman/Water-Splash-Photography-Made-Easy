@@ -9,43 +9,27 @@ Physics* PhysicsResource::getModel(){
 }
 
 void PhysicsResource::registerResource( ESP8266WebServer *server){
-  server->on("/physics", HTTP_GET, [this,&server](){
+  server->on("/physics/ApproxTimeToImpact", HTTP_GET, [this,&server](){
     this->getApproxTimeToImpact(server);
   });
-  // server->on("/physics", HTTP_POST, getTimeToImpact);
+   server->on("/physics/TimeToImpact", HTTP_POST, [this,&server](){
+     this->getTimeToImpact(server);});
   // server->on("/physics", HTTP_GET, getTimeToImpact);
+  Serial.println("physics/ApproxTimeToImpact");
 }
 
-JsonObject& PhysicsResource::handler( ESP8266WebServer *server){
-  StaticJsonBuffer<500> jsonBuffer;
-  String post_body = server->arg("plain");
-  Serial.println(post_body);
-  JsonObject& jsonBody = jsonBuffer.parseObject(post_body);
-  Serial.print("HTTP Method: ");
-  Serial.println(server->method());
-  return jsonBody;
-}
 
 void PhysicsResource::getApproxTimeToImpact( ESP8266WebServer *http_rest_server){
-  JsonObject& jsonBody = handler(http_rest_server);
-  if (!jsonBody.success()) {
-    Serial.println("error in parsing json body");
-    http_rest_server->send(400);
-  }
-  else {
-    StaticJsonBuffer<200> jsonBuffer1;
-    JsonObject& jsonObj1 = jsonBuffer1.createObject();
-    char JSONmessageBuffer[200];
-    jsonObj1["Approx Time To Impact"] = physics.getApproxTimeToImpact(jsonBody["height"], jsonBody["mass"]);
-    jsonObj1.prettyPrintTo(JSONmessageBuffer, sizeof(JSONmessageBuffer));
-
-    http_rest_server->send(200, "application/json", JSONmessageBuffer );
-  }
+  // String height = http_rest_server->arg('height');
+  // if(!height){
+  //   float h = height.toFloat();
+  //   http_rest_server->send(200, "application/json",std::string.to_string (physics.getApproxTimeToImpact(h)) );
+  // }
 }
 
-void PhysicsResource::getTimeToImpact(){
+void PhysicsResource::getTimeToImpact( ESP8266WebServer *http_rest_server){
 
 }
-void PhysicsResource::postTimetoImpact(){
+void PhysicsResource::postTimetoImpact( ESP8266WebServer *http_rest_server){
 
 };

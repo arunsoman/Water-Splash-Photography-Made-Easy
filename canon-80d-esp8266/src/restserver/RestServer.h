@@ -12,10 +12,13 @@ public:
   const int HTTP_REST_PORT = 80;
   const int WIFI_RETRY_DELAY = 500;
   const int MAX_WIFI_INIT_RETRY = 50;
-  const char* wifi_ssid = "YOUR_SSID";
-  const char* wifi_passwd = "YOUR_PASSWD";
+  const char* wifi_ssid = "HomeInet";
+  const char* wifi_passwd = "ril123456";
   ESP8266WebServer *http_rest_server;
+  static const int START =1;
+   static const int STOP =0;
 private:
+  int state = RestServer::STOP;
   int init_wifi() {
     int retries = 0;
     Serial.println("Connecting to WiFi AP..........");
@@ -31,10 +34,20 @@ private:
   }
 
   void send200ok(){
-    http_rest_server->send(200, "text/html","Welcome to the ESP8266 REST Web Server");
+    http_rest_server->send(200, "text/html","Welcome to the ESP8266 REST Web Server\n /start \n /stop");
+  }
+  void start(){
+    http_rest_server->send(200, "text/html","Worflow started");
+    state = RestServer::START;
+  }
+  void stop(){
+    http_rest_server->send(200, "text/html","Worflow stoped");
+    state = RestServer::STOP;
   }
   void config_rest_server_routing() {
     http_rest_server->on("/", HTTP_GET,std::bind(&RestServer::send200ok, this) );
+    http_rest_server->on("/start", HTTP_GET, std::bind(&RestServer::start, this) );
+    http_rest_server->on("/stop", HTTP_GET,std::bind(&RestServer::stop, this) );
   }
 
 public:
@@ -58,13 +71,13 @@ public:
     Serial.println("HTTP REST Server Started");
   }
 
-  void handleClient(){
+  int handleClient(){
     http_rest_server->handleClient();
+    return state;
   }
 
  ESP8266WebServer* getServer(){
     return http_rest_server;
   }
-
 };
 #endif

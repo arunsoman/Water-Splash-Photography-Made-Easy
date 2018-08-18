@@ -6,10 +6,11 @@ public:
   Dropper( );
   void drip();
   void stop();
-  void reset(std::vector<long> x, long, long);
+  void reset(long* delay, int size, long shutterSpeed);
 private:
-  std::vector<long>::iterator it;
-  std::vector<long> schedule;
+  int it;
+  int size;
+  long* schedule;
   long shutterSpeed;
   int SolenoidValvePin;
   void drop();

@@ -4,7 +4,7 @@
 /*********************************************************************
 * Comment
 *********************************************************************/
-int Physics::getApproxTimeToImpact(double volume, double height)
+int Physics::getApproxTimeToImpact(double height)
 {
   //TODO compute the time given height, mass
   return 1000;

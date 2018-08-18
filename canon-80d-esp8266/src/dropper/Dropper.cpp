@@ -1,6 +1,5 @@
 #include "Dropper.h"
 #include <Arduino.h>
-using namespace std;
 
 /*********************************************************************
 * Comment
@@ -8,32 +7,37 @@ using namespace std;
 Dropper::Dropper()
 {
   SolenoidValvePin = 3;
+  it = 0;
+   // pinMode(SolenoidValvePin, OUTPUT);
 }
 
-void Dropper::reset(vector<long> x, long y, long z){
-  for (vector<long>::iterator it = schedule.begin(); it != schedule.end(); ++it) {
-    delete &it;
-  }
-  delete &schedule;
-  schedule = x;
-  schedule.push_back(new long (y));
-  it = schedule.begin();
+void Dropper::reset(long* d, int si, long z){
+  schedule = d;
+  Serial.print(schedule [0]);
+  Serial.print(schedule [1]);
+  Serial.print(schedule [2]);
+  size = si;
   shutterSpeed = z;
 }
+
 void Dropper::drip(){
-  if(it == schedule.end()){
-    // memory leak ?? it;
-    it = schedule.begin();
-  }
-  delay(*it);
-  it++;
+  long l = schedule [it];
+  Serial.print("Dripping in ");
+Serial.print(l);
+  delay(l);
   drop();
+  it++;
+  if(it==size)
+  {it =0;}
 }
 
 void Dropper::drop(){
   digitalWrite(SolenoidValvePin, HIGH);
+  Serial.print("..Droped ");
   delayMicroseconds(shutterSpeed);
+  Serial.print(shutterSpeed);
   digitalWrite(SolenoidValvePin, HIGH);
+  Serial.println(" & closed ");
 }
 void Dropper::stop(){
 

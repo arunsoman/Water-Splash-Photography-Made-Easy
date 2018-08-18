@@ -3,7 +3,7 @@
 
 class Physics{
 public:
-  int getApproxTimeToImpact(double volume, double height);
+  int getApproxTimeToImpact(double height);
   void setTimeToImpactAs(int t);
   int getTimeToImpact();
 private:

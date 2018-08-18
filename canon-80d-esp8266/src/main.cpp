@@ -1,27 +1,23 @@
 #include <Arduino.h>
+
 #include "connector\Connector.h"
 #include "dropper\Dropper.h"
-#include "physics\Physics.h"
-#include "restserver\resources\PhysicsResource.h"
-#include "restserver\RestServer.h"
 #include "restServer\resources\Infra.h"
 
-Infra infra;
-PhysicsResource physicsRes;
-RestServer restServer;
-Dropper* dropper = infra.getDropper();
-Connector* connector = infra.getConnector();
+#define SIMULATOR
+int ARRAY_SIZE =5;
 
+Infra* infra;
 void setup() {
-  physicsRes.registerResource(restServer.getServer());
-  infra.registerResource(restServer.getServer());
-  // put your setup code here, to run once:
+  Serial.begin(115200);
+  infra = new Infra();
 }
 
 void loop() {
-  restServer.handleClient();
-  int timeToImpact = physicsRes.getModel()->getTimeToImpact();
-  dropper->drip();
-  delay(timeToImpact);
-  connector->shoot();
+    if(infra->restServer.handleClient()== RestServer::START){
+      int timeToImpact = infra->physicsRes.getModel()->getTimeToImpact();
+      infra->dropper->drip();
+      delay(timeToImpact);
+      infra->connector->shoot();
+  }
 }

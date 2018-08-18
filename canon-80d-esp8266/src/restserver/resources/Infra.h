@@ -1,40 +1,41 @@
 #ifndef INFRA_H
 #define INFRA_H
-using namespace std;
 
 #include <ESP8266WebServer.h>
 #include "..\..\dropper\Dropper.h"
 #include "..\..\connector\Connector.h"
+#include "PhysicsResource.h"
+#include "..\RestServer.h"
 
 class Infra{
 public:
   Infra();
-  void registerResource(ESP8266WebServer*);
-  Dropper* getDropper();
-  Connector* getConnector();
+   Dropper* dropper;
+   Connector* connector;
+   RestServer restServer;
+   PhysicsResource physicsRes;
 private:
-  Dropper* dropper;
-  Connector* connector;
+  void registerResource();
   void handleGetRepeateInterval(ESP8266WebServer*);
   void handleGetDripSequence(ESP8266WebServer*);
   void handlePostDripSequence(ESP8266WebServer*);
+  long sch[5] = {2000, 6000, 9000};
 
 };
 
 Infra::Infra(){
-  vector<long> sch;
-  long y = 500; long z = 50000;
+   long y = 3; long z = 5000;
   dropper = new Dropper();
-  dropper->reset(sch,y,z);
+   dropper->reset(sch,y,z);
   connector = new Connector();
+registerResource();
 }
-void Infra::registerResource(ESP8266WebServer* server){
-  handleGetDripSequence(server);
-  handleGetRepeateInterval(server);
-  handlePostDripSequence(server);
+void Infra::registerResource(){
+  physicsRes.registerResource(restServer.getServer());
+  handleGetDripSequence(restServer.getServer());
+  handleGetRepeateInterval(restServer.getServer());
+  handlePostDripSequence(restServer.getServer());
 }
-Dropper* Infra::getDropper(){return dropper;}
-Connector* Infra::getConnector(){return connector;}
 
 void Infra::handleGetRepeateInterval(ESP8266WebServer*server){}
 void Infra::handleGetDripSequence(ESP8266WebServer*server){}
