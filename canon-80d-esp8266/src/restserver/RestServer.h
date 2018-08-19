@@ -39,7 +39,7 @@ private:
 
   void send200ok()
   {
-    http_rest_server->send(200, "text/html", "Welcome to the ESP8266 REST Web Server\n /start \n /stop");
+    http_rest_server->send(200, "text/html", "Welcome to the ESP8266 REST Web Server\n /start \n /stop\n /SolinoidShutter\n DripSequence");
   }
   void start()
   {
